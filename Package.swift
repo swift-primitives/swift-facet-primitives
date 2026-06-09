@@ -1,0 +1,117 @@
+// swift-tools-version: 6.3.1
+import PackageDescription
+
+let package = Package(
+    name: "swift-facet-primitives",
+    platforms: [
+        .macOS(.v26),
+        .iOS(.v26),
+        .tvOS(.v26),
+        .watchOS(.v26),
+        .visionOS(.v26),
+    ],
+    products: [
+        // MARK: - Namespace
+        .library(
+            name: "Facet Primitive",
+            targets: ["Facet Primitive"]
+        ),
+
+        // MARK: - Sub-namespace targets
+        .library(
+            name: "Facet Enumerable Primitives",
+            targets: ["Facet Enumerable Primitives"]
+        ),
+
+        // MARK: - Umbrella
+        .library(
+            name: "Facet Primitives",
+            targets: ["Facet Primitives"]
+        ),
+
+        // MARK: - Test Support
+        .library(
+            name: "Facet Primitives Test Support",
+            targets: ["Facet Primitives Test Support"]
+        ),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/swift-primitives/swift-axis-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-direction-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-finite-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-ordinal-primitives.git", branch: "main"),
+    ],
+    targets: [
+        // MARK: - Namespace
+        // Facet's fields are Axis<N> and Direction, so the root depends on the two atom
+        // roots — the [MOD-017] cross-namespace-root exception. Both roots are zero-dep,
+        // so Facet Primitive's transitive weight stays minimal.
+        .target(
+            name: "Facet Primitive",
+            dependencies: [
+                .product(name: "Axis Primitive", package: "swift-axis-primitives"),
+                .product(name: "Direction Primitive", package: "swift-direction-primitives"),
+            ]
+        ),
+
+        // MARK: - Sub-namespace targets (per [MOD-031])
+        .target(
+            name: "Facet Enumerable Primitives",
+            dependencies: [
+                "Facet Primitive",
+                .product(name: "Axis Primitive", package: "swift-axis-primitives"),
+                .product(name: "Direction Primitive", package: "swift-direction-primitives"),
+                .product(name: "Finite Primitives", package: "swift-finite-primitives"),
+                .product(name: "Ordinal Primitives", package: "swift-ordinal-primitives"),
+            ]
+        ),
+
+        // MARK: - Umbrella
+        .target(
+            name: "Facet Primitives",
+            dependencies: [
+                "Facet Primitive",
+                "Facet Enumerable Primitives",
+            ]
+        ),
+
+        // MARK: - Test Support
+        .target(
+            name: "Facet Primitives Test Support",
+            dependencies: [
+                "Facet Primitives",
+                .product(name: "Ordinal Primitives Test Support", package: "swift-ordinal-primitives"),
+            ],
+            path: "Tests/Support"
+        ),
+
+        // MARK: - Tests
+        .testTarget(
+            name: "Facet Primitives Tests",
+            dependencies: [
+                "Facet Primitives",
+                "Facet Primitives Test Support",
+            ]
+        ),
+    ],
+    swiftLanguageModes: [.v6]
+)
+
+for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
+    let ecosystem: [SwiftSetting] = [
+        .strictMemorySafety(),
+        .enableUpcomingFeature("ExistentialAny"),
+        .enableUpcomingFeature("InternalImportsByDefault"),
+        .enableUpcomingFeature("MemberImportVisibility"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+        .enableExperimentalFeature("LifetimeDependence"),
+        .enableExperimentalFeature("Lifetimes"),
+        .enableExperimentalFeature("SuppressedAssociatedTypes"),
+        .enableUpcomingFeature("InferIsolatedConformances"),
+        .enableUpcomingFeature("LifetimeDependence"),
+    ]
+
+    let package: [SwiftSetting] = []
+
+    target.swiftSettings = (target.swiftSettings ?? []) + ecosystem + package
+}
