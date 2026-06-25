@@ -1,8 +1,7 @@
 // Facet Tests.swift
 
-import Testing
-
 import Facet_Primitives
+import Testing
 
 // MARK: - Facet - Construction
 
@@ -43,13 +42,16 @@ struct `Facet - Conformances` {
     func `Equatable distinguishes axis and direction`() {
         #expect(
             Facet<2>(axis: .primary, direction: .positive)
-                == Facet<2>(axis: .primary, direction: .positive))
+                == Facet<2>(axis: .primary, direction: .positive)
+        )
         #expect(
             Facet<2>(axis: .primary, direction: .positive)
-                != Facet<2>(axis: .primary, direction: .negative))
+                != Facet<2>(axis: .primary, direction: .negative)
+        )
         #expect(
             Facet<2>(axis: .primary, direction: .positive)
-                != Facet<2>(axis: .secondary, direction: .positive))
+                != Facet<2>(axis: .secondary, direction: .positive)
+        )
     }
 
     @Test
@@ -62,5 +64,24 @@ struct `Facet - Conformances` {
             Facet(axis: .primary, direction: .positive),  // duplicate
         ]
         #expect(set.count == 4)
+    }
+}
+
+// MARK: - Facet - Comparison
+
+@Suite
+struct `Facet - Comparison` {
+    @Test
+    func `orders axis-major then positive-before-negative`() {
+        // matches the Finite.Enumerable ordinal order
+        #expect(Facet<2>(axis: .primary, direction: .positive) < Facet<2>(axis: .primary, direction: .negative))
+        #expect(Facet<2>(axis: .primary, direction: .negative) < Facet<2>(axis: .secondary, direction: .positive))
+        #expect(Facet<2>(axis: .secondary, direction: .positive) < Facet<2>(axis: .secondary, direction: .negative))
+    }
+
+    @Test
+    func `sorted equals allCases order`() {
+        let all = Array(Facet<2>.allCases)
+        #expect(all.sorted() == all)
     }
 }

@@ -14,8 +14,10 @@ extension Facet: Finite.Enumerable {
     @inlinable
     public static var count: Cardinal { Cardinal(integerLiteral: UInt(2 * N)) }
 
-    /// Ordinal of this facet in `0..<2N`, ordered axis-major then direction
-    /// (`+axis0`, `-axis0`, `+axis1`, `-axis1`, …).
+    /// The ordinal of this facet in `0..<2N`, ordered axis-major then direction.
+    ///
+    /// Positive precedes negative within each axis: `+axis0`, `-axis0`, `+axis1`,
+    /// `-axis1`, ….
     @inlinable
     public var ordinal: Ordinal {
         let directionBit = direction == .positive ? 0 : 1

@@ -1,9 +1,8 @@
 // Facet+Finite.Enumerable Tests.swift
 
+import Facet_Primitives
 import Facet_Primitives_Test_Support
 import Testing
-
-import Facet_Primitives
 
 // MARK: - Facet+Finite.Enumerable - Enumerable
 

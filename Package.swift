@@ -19,6 +19,18 @@ let package = Package(
 
         // MARK: - Sub-namespace targets
         .library(
+            name: "Facet Equation Primitives",
+            targets: ["Facet Equation Primitives"]
+        ),
+        .library(
+            name: "Facet Hash Primitives",
+            targets: ["Facet Hash Primitives"]
+        ),
+        .library(
+            name: "Facet Comparison Primitives",
+            targets: ["Facet Comparison Primitives"]
+        ),
+        .library(
             name: "Facet Enumerable Primitives",
             targets: ["Facet Enumerable Primitives"]
         ),
@@ -38,14 +50,16 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/swift-primitives/swift-axis-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-direction-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-equation-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-hash-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-comparison-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-finite-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-ordinal-primitives.git", branch: "main"),
     ],
     targets: [
         // MARK: - Namespace
         // Facet's fields are Axis<N> and Direction, so the root depends on the two atom
-        // roots — the [MOD-017] cross-namespace-root exception. Both roots are zero-dep,
-        // so Facet Primitive's transitive weight stays minimal.
+        // roots — the [MOD-017] cross-namespace-root exception. Both roots are zero-dep.
         .target(
             name: "Facet Primitive",
             dependencies: [
@@ -55,6 +69,29 @@ let package = Package(
         ),
 
         // MARK: - Sub-namespace targets (per [MOD-031])
+        // Institute Equatable/Hashable/Comparable twins:
+        .target(
+            name: "Facet Equation Primitives",
+            dependencies: [
+                "Facet Primitive",
+                .product(name: "Equation Primitives", package: "swift-equation-primitives"),
+            ]
+        ),
+        .target(
+            name: "Facet Hash Primitives",
+            dependencies: [
+                "Facet Primitive",
+                .product(name: "Hash Primitives", package: "swift-hash-primitives"),
+            ]
+        ),
+        .target(
+            name: "Facet Comparison Primitives",
+            dependencies: [
+                "Facet Primitive",
+                .product(name: "Comparison Primitives", package: "swift-comparison-primitives"),
+            ]
+        ),
+        // Finite.Enumerable conformance (2N inhabitants enumeration):
         .target(
             name: "Facet Enumerable Primitives",
             dependencies: [
@@ -71,6 +108,9 @@ let package = Package(
             name: "Facet Primitives",
             dependencies: [
                 "Facet Primitive",
+                "Facet Equation Primitives",
+                "Facet Hash Primitives",
+                "Facet Comparison Primitives",
                 "Facet Enumerable Primitives",
             ]
         ),
